@@ -1,0 +1,2 @@
+PGPASSWORD="postgres"
+db name : "spotify"

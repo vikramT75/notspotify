@@ -35,6 +35,7 @@ module "eks" {
   eks_managed_node_groups = {
     initial = {
       name         = "${var.cluster_name}-nodes"
+      ami_type     = "AL2023_x86_64_STANDARD"
       min_size     = var.min_nodes
       max_size     = var.max_nodes
       desired_size = var.desired_nodes

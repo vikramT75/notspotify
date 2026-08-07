@@ -58,13 +58,13 @@ spec:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           readinessProbe:
             httpGet:
-              path: /api/songs
+              path: /api/song/list
               port: {{ .Values.backend.service.port }}
-            initialDelaySeconds: 20
+            initialDelaySeconds: 25
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /api/songs
+              path: /api/song/list
               port: {{ .Values.backend.service.port }}
-            initialDelaySeconds: 30
+            initialDelaySeconds: 40
             periodSeconds: 20

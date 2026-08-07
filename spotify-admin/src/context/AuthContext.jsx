@@ -9,7 +9,7 @@ export const AuthContextProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const url = "http://localhost:4000";
+    const url = process.env.NEXT_PUBLIC_API_URL || "";
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");

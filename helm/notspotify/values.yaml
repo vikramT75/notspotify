@@ -1,0 +1,96 @@
+# Default values for NotSpotify full stack Helm chart
+
+global:
+  environment: dev
+  namespace: notspotify
+
+# Cloudinary Secret Settings (Fill in or inject during helm install)
+cloudinary:
+  cloudName: "your_cloudinary_name"
+  apiKey: "your_cloudinary_api_key"
+  apiSecret: "your_cloudinary_api_secret"
+
+# PostgreSQL Database Configuration
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+  username: "postgres"
+  password: "postgres_secure_password"
+  database: "spotify"
+  persistence:
+    enabled: true
+    storageClass: "gp3" # AWS EBS gp3 dynamic storage
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Java Spring Boot Backend Configuration
+backend:
+  replicaCount: 2
+  image:
+    repository: "your-dockerhub-username/spotify-backend"
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 4000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+
+# Next.js User-Facing Clone Frontend
+clone:
+  replicaCount: 2
+  image:
+    repository: "your-dockerhub-username/spotify-clone"
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Next.js Admin Dashboard Frontend
+admin:
+  replicaCount: 1
+  image:
+    repository: "your-dockerhub-username/spotify-admin"
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# AWS Ingress (ALB Controller) Configuration
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'

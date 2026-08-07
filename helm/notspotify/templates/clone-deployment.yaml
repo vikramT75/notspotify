@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-clone
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: spotify-clone
+    {{- include "notspotify.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.clone.replicaCount }}
+  selector:
+    matchLabels:
+      app: spotify-clone
+  template:
+    metadata:
+      labels:
+        app: spotify-clone
+    spec:
+      containers:
+        - name: clone
+          image: "{{ .Values.clone.image.repository }}:{{ .Values.clone.image.tag }}"
+          imagePullPolicy: {{ .Values.clone.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.clone.service.port }}
+              name: http
+          resources:
+            {{- toYaml .Values.clone.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.clone.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.clone.service.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 20

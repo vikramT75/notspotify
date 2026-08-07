@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-admin
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: spotify-admin
+    {{- include "notspotify.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.admin.replicaCount }}
+  selector:
+    matchLabels:
+      app: spotify-admin
+  template:
+    metadata:
+      labels:
+        app: spotify-admin
+    spec:
+      containers:
+        - name: admin
+          image: "{{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}"
+          imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.admin.service.port }}
+              name: http
+          resources:
+            {{- toYaml .Values.admin.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.admin.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.admin.service.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 20

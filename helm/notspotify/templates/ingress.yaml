@@ -1,0 +1,40 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notspotify-ingress
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  labels:
+    {{- include "notspotify.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - http:
+        paths:
+          # Route /api to Spring Boot Backend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
+          # Route /admin to Next.js Admin Dashboard
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-admin
+                port:
+                  number: {{ .Values.admin.service.port }}
+          # Route all other traffic / to Next.js Clone Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-clone
+                port:
+                  number: {{ .Values.clone.service.port }}
+{{- end }}

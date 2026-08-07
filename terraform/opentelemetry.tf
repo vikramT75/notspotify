@@ -6,6 +6,10 @@ resource "helm_release" "cert_manager" {
   version          = "v1.14.4"
   namespace        = "cert-manager"
   create_namespace = true
+  wait             = false
+  timeout          = 600
+  force_update     = true
+  cleanup_on_fail  = true
 
   set {
     name  = "installCRDs"
@@ -25,6 +29,10 @@ resource "helm_release" "opentelemetry_operator" {
   version          = "0.57.0"
   namespace        = "opentelemetry-operator-system"
   create_namespace = true
+  wait             = false
+  timeout          = 600
+  force_update     = true
+  cleanup_on_fail  = true
 
   set {
     name  = "manager.collectorImage.repository"

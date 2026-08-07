@@ -3,10 +3,14 @@ resource "helm_release" "karpenter" {
   namespace        = "karpenter"
   create_namespace = true
 
-  name       = "karpenter"
-  repository = "oci://public.ecr.aws/karpenter"
-  chart      = "karpenter"
-  version    = "0.37.0"
+  name            = "karpenter"
+  repository      = "oci://public.ecr.aws/karpenter"
+  chart           = "karpenter"
+  version         = "0.37.0"
+  wait            = false
+  timeout         = 600
+  force_update    = true
+  cleanup_on_fail = true
 
   values = [
     <<-EOT

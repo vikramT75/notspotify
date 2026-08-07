@@ -1,10 +1,14 @@
 # Deploy Kubernetes Metrics Server via Helm (Required for HPA pod autoscaling)
 resource "helm_release" "metrics_server" {
-  name       = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server/"
-  chart      = "metrics-server"
-  version    = "3.12.1"
-  namespace  = "kube-system"
+  name            = "metrics-server"
+  repository      = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart           = "metrics-server"
+  version         = "3.12.1"
+  namespace       = "kube-system"
+  wait            = false
+  timeout         = 600
+  force_update    = true
+  cleanup_on_fail = true
 
   set {
     name  = "metrics.enabled"

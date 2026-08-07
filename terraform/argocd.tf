@@ -6,6 +6,10 @@ resource "helm_release" "argocd" {
   version          = "6.7.18"
   namespace        = "argocd"
   create_namespace = true
+  wait             = false
+  timeout          = 600
+  force_update     = true
+  cleanup_on_fail  = true
 
   set {
     name  = "server.service.type"

@@ -18,6 +18,8 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: postgres
           image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
@@ -53,7 +55,7 @@ spec:
                 - /bin/sh
                 - -c
                 - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
             periodSeconds: 10
           livenessProbe:
             exec:
@@ -61,7 +63,7 @@ spec:
                 - /bin/sh
                 - -c
                 - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 15
+            initialDelaySeconds: 45
             periodSeconds: 20
       volumes:
         - name: postgres-storage

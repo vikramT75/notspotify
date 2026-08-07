@@ -26,6 +26,8 @@ spec:
             - containerPort: 5432
               name: postgres
           env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -51,7 +53,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - exec pg_isready -U {{ .Values.postgres.username }} -d {{ .Values.postgres.database }}
+                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
@@ -59,7 +61,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - exec pg_isready -U {{ .Values.postgres.username }} -d {{ .Values.postgres.database }}
+                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 15
             periodSeconds: 20
       volumes:

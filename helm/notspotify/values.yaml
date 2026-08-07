@@ -22,7 +22,7 @@ postgres:
   database: "spotify"
   persistence:
     enabled: true
-    storageClass: "gp3" # AWS EBS gp3 dynamic storage
+    storageClass: "gp2" # Default AWS EKS EBS storage class
     size: 10Gi
   resources:
     requests:

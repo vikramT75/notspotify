@@ -70,11 +70,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
 
-        // Create new user's account
-        // First user to register becomes ADMIN for convenience, others USER
-        Role role = userRepository.count() == 0 ? Role.ADMIN : Role.USER;
-        
-        User user = new User(username, email, passwordEncoder.encode(password), role);
+        // All new registrations are regular users.
+        // Admin accounts are seeded by DataInitializer, not via public signup.
+        User user = new User(username, email, passwordEncoder.encode(password), Role.USER);
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully!");

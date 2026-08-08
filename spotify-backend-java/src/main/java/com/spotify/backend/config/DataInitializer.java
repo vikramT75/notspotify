@@ -20,14 +20,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // If our default admin does not exist, wipe all users and create the default admin.
+        // Only create the default admin account if it doesn't already exist.
+        // Never delete existing users.
         if (userRepository.findByUsername("admin1").isEmpty()) {
-            System.out.println("Wiping existing users and creating default admin1 account...");
-            userRepository.deleteAll();
-            
+            System.out.println("Default admin1 account not found — creating it now.");
             User admin = new User("admin1", "admin1@gmail.com", passwordEncoder.encode("admin1"), Role.ADMIN);
             userRepository.save(admin);
-            
             System.out.println("Default admin account created successfully.");
         }
     }

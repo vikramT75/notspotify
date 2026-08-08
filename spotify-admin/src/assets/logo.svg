@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="100%" height="100%">
+  <defs>
+    <linearGradient id="adminLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1ed760" />
+      <stop offset="100%" stop-color="#1db954" />
+    </linearGradient>
+  </defs>
+  <!-- Green Play Badge -->
+  <circle cx="40" cy="40" r="34" fill="url(#adminLogoGrad)" />
+  <path d="M33 25C33 23.4 34.8 22.4 36.2 23.2L57 35.7C58.3 36.5 58.3 38.5 57 39.3L36.2 51.8C34.8 52.6 33 51.6 33 50V25Z" fill="#000000" />
+  <!-- Brand Text -->
+  <text x="88" y="49" fill="#FFFFFF" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" letter-spacing="-0.5">NotSpotify</text>
+  <!-- Admin Pill Badge -->
+  <rect x="238" y="30" width="68" height="24" rx="12" fill="#1DB954" />
+  <text x="251" y="46" fill="#000000" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="800" letter-spacing="0.5">ADMIN</text>
+</svg>

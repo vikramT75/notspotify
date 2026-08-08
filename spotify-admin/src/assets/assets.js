@@ -1,5 +1,5 @@
-import logo from './logo.png'
-import logo_small from './logo_small.png'
+import logo from './logo.svg'
+import logo_small from './logo_small.svg'
 import upload_area from './upload_area.png'
 import upload_added from './upload_added.png'
 import add_album from './add_album.png'

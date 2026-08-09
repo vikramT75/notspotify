@@ -12,14 +12,23 @@ export const AuthContextProvider = ({ children }) => {
     const url = process.env.NEXT_PUBLIC_API_URL || "";
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("token");
-        const storedUser = localStorage.getItem("user");
-        
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
+        try {
+            const storedToken = localStorage.getItem("token");
+            const storedUser = localStorage.getItem("user");
+
+            if (storedToken && storedUser) {
+                setToken(storedToken);
+                setUser(JSON.parse(storedUser));
+            }
+        } catch (e) {
+            // Stale or malformed data in localStorage — wipe and start fresh
+            console.warn("AuthContext: clearing corrupted localStorage", e);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+        } finally {
+            // Always clear the loading state, no matter what
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     const login = async (username, password) => {

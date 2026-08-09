@@ -27,7 +27,6 @@ const AdminGuard = ({ children }) => {
         if (!res.success) {
             setError(res.message.toString());
         } else {
-            // Check if they are admin
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
             if (loggedInUser.role !== 'ADMIN') {
                 logout();
@@ -36,8 +35,20 @@ const AdminGuard = ({ children }) => {
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-[#F3FFF7] flex items-center justify-center">Loading...</div>;
+    // Loading — show a proper full-screen spinner, not a bare text node
+    if (loading) {
+        return (
+            <div style={{
+                position: 'fixed', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#F3FFF7', fontSize: '1.1rem', color: '#555'
+            }}>
+                Loading...
+            </div>
+        );
+    }
 
+    // Not authenticated or not ADMIN — show login form
     if (!user || user.role !== 'ADMIN') {
         return (
             <div className="min-h-screen bg-[#F3FFF7] flex items-center justify-center p-4">

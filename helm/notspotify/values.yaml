@@ -31,7 +31,7 @@ postgres:
 backend:
   replicaCount: 2
   image:
-    repository: "your-dockerhub-username/spotify-backend"
+    repository: "vikramt75/spotify-backend"
     tag: "latest"
     pullPolicy: Always
   service:
@@ -49,7 +49,7 @@ backend:
 clone:
   replicaCount: 2
   image:
-    repository: "your-dockerhub-username/spotify-clone"
+    repository: "vikramt75/spotify-clone"
     tag: "latest"
     pullPolicy: Always
   service:
@@ -67,7 +67,7 @@ clone:
 admin:
   replicaCount: 1
   image:
-    repository: "your-dockerhub-username/spotify-admin"
+    repository: "vikramt75/spotify-admin"
     tag: "latest"
     pullPolicy: Always
   service:

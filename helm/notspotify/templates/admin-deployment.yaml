@@ -27,13 +27,13 @@ spec:
             {{- toYaml .Values.admin.resources | nindent 12 }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /admin
               port: {{ .Values.admin.service.port }}
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /
+              path: /admin
               port: {{ .Values.admin.service.port }}
             initialDelaySeconds: 20
             periodSeconds: 20

@@ -42,17 +42,17 @@ spec:
             - name: CLOUDINARY_NAME
               valueFrom:
                 secretKeyRef:
-                  name: notspotify-secrets
+                  name: cloudinary-secrets
                   key: CLOUDINARY_NAME
             - name: CLOUDINARY_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: notspotify-secrets
+                  name: cloudinary-secrets
                   key: CLOUDINARY_API_KEY
             - name: CLOUDINARY_API_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: notspotify-secrets
+                  name: cloudinary-secrets
                   key: CLOUDINARY_API_SECRET
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}

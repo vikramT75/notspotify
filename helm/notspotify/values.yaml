@@ -4,11 +4,6 @@ global:
   environment: dev
   namespace: notspotify
 
-# Cloudinary Secret Settings (Fill in or inject during helm install)
-cloudinary:
-  cloudName: "your_cloudinary_name"
-  apiKey: "your_cloudinary_api_key"
-  apiSecret: "your_cloudinary_api_secret"
 
 # PostgreSQL Database Configuration
 postgres:

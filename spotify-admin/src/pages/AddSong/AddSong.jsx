@@ -10,10 +10,12 @@ const AddSong = () => {
   const [image, setImage] = useState(false);
   const [song, setSong] = useState(false);
   const [name, setName] = useState("");
+  const [artistName, setArtistName] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
   const [desc, setDesc] = useState("");
-  const [album, setAlbum] = useState("none");
+  const [album, setAlbum] = useState("Single");
   const [loading, setLoading] = useState(false);
-  const [albumData, setAlbumData] = useState([])
+  const [albumData, setAlbumData] = useState([]);
 
   const onSubmitHandler = async (e) => {
 
@@ -26,6 +28,8 @@ const AddSong = () => {
       const formData = new FormData();
 
       formData.append("name", name);
+      formData.append("artistName", artistName);
+      formData.append("releaseDate", releaseDate);
       formData.append("desc", desc);
       formData.append("image", image);
       formData.append("audio", song);
@@ -36,8 +40,10 @@ const AddSong = () => {
       if (response.data.success) {
         toast.success("Song Added");
         setName("");
+        setArtistName("");
+        setReleaseDate("");
         setDesc("");
-        setAlbum("none");
+        setAlbum("Single");
         setImage(false);
         setSong(false);
       }
@@ -101,14 +107,24 @@ const AddSong = () => {
       </div>
 
       <div className="flex flex-col gap-2.5">
+        <p>Artist name</p>
+        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setArtistName(e.target.value)} value={artistName} type="text" placeholder='Type here' required />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <p>Release date</p>
+        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setReleaseDate(e.target.value)} value={releaseDate} type="date" required />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
         <p>Song description</p>
         <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setDesc(e.target.value)} value={desc} type="text" placeholder='Type here' required />
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <p>Album</p>
+        <p>Album type</p>
         <select className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[150px]' onChange={(e) => setAlbum(e.target.value)} defaultValue={album} >
-          <option value="none">None</option>
+          <option value="Single">Single</option>
           {albumData.map((item, index) => (<option key={index} value={item.name}>{item.name}</option>))}
         </select>
       </div>

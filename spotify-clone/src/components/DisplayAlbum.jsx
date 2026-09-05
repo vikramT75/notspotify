@@ -28,6 +28,7 @@ const DisplayAlbum = () => {
             <p>Playlist</p>
             <h2 className='text-5xl font-bold mb-4 md:text-7xl'>{albumData.name}</h2>
             <h4>{albumData.desc}</h4>
+            <p className='mt-1 text-sm text-gray-300'>Collaborators: {albumData.collaborators || "None"}</p>
             <p className='mt-1'>
                 <img className='inline-block w-5 mr-1' src={assets.spotify_logo} alt="" />
                 <b>NotSpotify</b>
@@ -53,7 +54,7 @@ const DisplayAlbum = () => {
                     {item.name}
                 </p>
                 <p className='text-[15px]'>{albumData.name}</p>
-                <p className='text-[15px] hidden sm:block'>5 days ago</p>
+                <p className='text-[15px] hidden sm:block'>{item.releaseDate || "5 days ago"}</p>
                 <p className='text-[15px] text-center'>{item.duration}</p>
             </div>
         ))

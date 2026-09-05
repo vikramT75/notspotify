@@ -27,6 +27,8 @@ public class AlbumController {
             @RequestParam("name") String name,
             @RequestParam("desc") String desc,
             @RequestParam("bgColour") String bgColour,
+            @RequestParam("collaborators") String collaborators,
+            @RequestParam("releaseDate") String releaseDate,
             @RequestParam("image") MultipartFile imageFile) {
 
         Map<String, Object> response = new HashMap<>();
@@ -34,7 +36,7 @@ public class AlbumController {
             Map uploadResult = cloudinaryService.uploadImage(imageFile);
             String imageUrl = (String) uploadResult.get("secure_url");
 
-            Album album = new Album(name, desc, bgColour, imageUrl);
+            Album album = new Album(name, desc, bgColour, imageUrl, collaborators, releaseDate);
 
             albumRepository.save(album);
 

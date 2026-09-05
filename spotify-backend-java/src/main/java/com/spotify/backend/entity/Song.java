@@ -28,16 +28,22 @@ public class Song {
 
     private String duration;
 
+    private String artistName;
+
+    private String releaseDate;
+
     public Song() {
     }
 
-    public Song(String name, String description, String album, String image, String file, String duration) {
+    public Song(String name, String description, String album, String image, String file, String duration, String artistName, String releaseDate) {
         this.name = name;
         this.description = description;
         this.album = album;
         this.image = image;
         this.file = file;
         this.duration = duration;
+        this.artistName = artistName;
+        this.releaseDate = releaseDate;
     }
 
     public String getId() {
@@ -94,5 +100,21 @@ public class Song {
 
     public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }

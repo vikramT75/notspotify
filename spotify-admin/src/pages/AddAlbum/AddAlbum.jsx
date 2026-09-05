@@ -11,6 +11,8 @@ const AddAlbum = () => {
   const [colour, setColour] = useState("");
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
+  const [collaborators, setCollaborators] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
@@ -27,6 +29,8 @@ const AddAlbum = () => {
       formData.append("desc", desc);
       formData.append("image", image);
       formData.append("bgColour", colour);
+      formData.append("collaborators", collaborators);
+      formData.append("releaseDate", releaseDate);
 
       const response = await axios.post(`${url}/api/album/add`, formData);
 
@@ -34,6 +38,8 @@ const AddAlbum = () => {
         toast.success("Album Added");
         setName("");
         setDesc("");
+        setCollaborators("");
+        setReleaseDate("");
         setImage(false);
       }
       else {
@@ -77,6 +83,16 @@ const AddAlbum = () => {
       <div className="flex flex-col gap-2.5">
         <p>Album description</p>
         <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setDesc(e.target.value)} value={desc} type="text" placeholder='Type here' />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <p>Collaborators</p>
+        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setCollaborators(e.target.value)} value={collaborators} type="text" placeholder='Type here' />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <p>Release date</p>
+        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setReleaseDate(e.target.value)} value={releaseDate} type="date" />
       </div>
 
       <div className="flex flex-col gap-3">

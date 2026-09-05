@@ -24,14 +24,20 @@ public class Album {
 
     private String image;
 
+    private String collaborators;
+
+    private String releaseDate;
+
     public Album() {
     }
 
-    public Album(String name, String description, String bgColour, String image) {
+    public Album(String name, String description, String bgColour, String image, String collaborators, String releaseDate) {
         this.name = name;
         this.description = description;
         this.bgColour = bgColour;
         this.image = image;
+        this.collaborators = collaborators;
+        this.releaseDate = releaseDate;
     }
 
     public String getId() {
@@ -72,5 +78,21 @@ public class Album {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCollaborators() {
+        return collaborators;
+    }
+
+    public void setCollaborators(String collaborators) {
+        this.collaborators = collaborators;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }

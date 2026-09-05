@@ -20,9 +20,9 @@ const PlayerContextProvider = (props) => {
     const seekBar = useRef(null);
     const url = process.env.NEXT_PUBLIC_API_URL || '';
 
-    const [songsData, setSongsData] = useState(defaultSongs);
-    const [albumsData, setAlbumData] = useState(defaultAlbums);
-    const [track, setTrack] = useState(defaultSongs[0]);
+    const [songsData, setSongsData] = useState([]);
+    const [albumsData, setAlbumData] = useState([]);
+    const [track, setTrack] = useState(null);
     const [playStatus, setPlayStatus] = useState(false);
     const [time, setTime] = useState({
         currentTime: {
@@ -153,13 +153,13 @@ const PlayerContextProvider = (props) => {
                     audioRef.current.load();
                 }
             } else {
-                setSongsData(defaultSongs);
-                setTrack(defaultSongs[0]);
+                setSongsData([]);
+                setTrack(null);
             }
         } catch (error) {
-            console.error("Using default songs dataset:", error);
-            setSongsData(defaultSongs);
-            setTrack(defaultSongs[0]);
+            console.error("Error fetching songs:", error);
+            setSongsData([]);
+            setTrack(null);
         }
     };
 
@@ -173,11 +173,11 @@ const PlayerContextProvider = (props) => {
                 }));
                 setAlbumData(cleanedAlbums);
             } else {
-                setAlbumData(defaultAlbums);
+                setAlbumData([]);
             }
         } catch (error) {
-            console.error("Using default albums dataset:", error);
-            setAlbumData(defaultAlbums);
+            console.error("Error fetching albums:", error);
+            setAlbumData([]);
         }
     };
 

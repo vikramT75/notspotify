@@ -27,6 +27,8 @@ public class SongController {
             @RequestParam("name") String name,
             @RequestParam("desc") String desc,
             @RequestParam("album") String album,
+            @RequestParam("artistName") String artistName,
+            @RequestParam("releaseDate") String releaseDate,
             @RequestParam("image") MultipartFile imageFile,
             @RequestParam("audio") MultipartFile audioFile) {
 
@@ -51,7 +53,7 @@ public class SongController {
             int seconds = (int) Math.floor(durationNum % 60);
             String duration = minutes + ":" + seconds;
 
-            Song song = new Song(name, desc, album, imageUrl, audioUrl, duration);
+            Song song = new Song(name, desc, album, imageUrl, audioUrl, duration, artistName, releaseDate);
 
             songRepository.save(song);
 

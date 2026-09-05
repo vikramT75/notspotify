@@ -64,7 +64,7 @@ const ListAlbum = () => {
               <p>{item.collaborators}</p>
               <p>{item.releaseDate}</p>
               <input type="color" defaultValue={item.bgColour} disabled />
-              <p className='cursor-pointer' onClick={() => removeAlbum(item._id)}>x</p>
+              <p className='cursor-pointer' onClick={() => removeAlbum(item._id || item.id)}>x</p>
             </div>
           )
         })}

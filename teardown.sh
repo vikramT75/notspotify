@@ -13,10 +13,10 @@ echo -e "\n\033[1;35mWaiting 45 seconds for AWS ELB and ENIs to be fully detache
 sleep 45
 
 echo -e "\n\033[1;33m2. Uninstalling ArgoCD and NotSpotify...\033[0m"
-helm uninstall argocd -n argocd || true
-helm uninstall notspotify -n notspotify || true
-kubectl delete namespace argocd || true
-kubectl delete namespace notspotify || true
+helm uninstall argocd -n argocd --wait=false || true
+helm uninstall notspotify -n notspotify --wait=false || true
+kubectl delete namespace argocd --wait=false || true
+kubectl delete namespace notspotify --wait=false || true
 
 echo -e "\n\033[1;33m3. Deleting Persistent Volume Claims...\033[0m"
 echo -e "\033[0;37m   (This cleans up any lingering AWS EBS volumes)\033[0m"

@@ -9,14 +9,14 @@ import album_icon from './album_icon.png'
 import upload_song from './upload_song.png'
 
 export const assets ={
-    logo,
-    logo_small,
-    upload_area,
-    upload_added,
-    add_album,
-    add_song,
-    song_icon,
-    album_icon,
-    upload_song
+    logo: logo.src,
+    logo_small: logo_small.src,
+    upload_area: upload_area.src,
+    upload_added: upload_added.src,
+    add_album: add_album.src,
+    add_song: add_song.src,
+    song_icon: song_icon.src,
+    album_icon: album_icon.src,
+    upload_song: upload_song.src
 }
 

@@ -4,7 +4,7 @@ import { PlayerContext } from '../context/PlayerContext'
 
 const Player = () => {
 
-    const {track,seekBar,seekBg,playStatus,play,pause,time,previous,next,seekSong} = useContext(PlayerContext);
+    const {track,seekBar,seekBg,playStatus,play,pause,time,previous,next,seekSong,audioRef} = useContext(PlayerContext);
 
   return track ? (
     <div className='h-[10%] bg-black flex justify-between items-center text-white px-4'>
@@ -12,7 +12,7 @@ const Player = () => {
         <img className='w-12' src={track.image} alt="" />
         <div>
             <p>{track.name}</p>
-            <p>{track.desc ? track.desc.slice(0,12) : ''}</p>
+            <p>{track.artistName ? track.artistName.slice(0,12) : ''}</p>
         </div>
       </div>
       <div className='flex flex-col items-center gap-1 m-auto'>
@@ -35,16 +35,20 @@ const Player = () => {
         </div>
       </div>
       <div className='hidden lg:flex items-center gap-2 opacity-75'>
-        <img className='w-4' src={assets.plays_icon} alt="" />
-        <img className='w-4' src={assets.mic_icon} alt="" />
-        <img className='w-4' src={assets.queue_icon} alt="" />
-        <img className='w-4' src={assets.speaker_icon} alt="" />
         <img className='w-4' src={assets.volume_icon} alt="" />
-        <div className='w-20 bg-slate-50 h-1 rounded'>
-
-        </div>
-        <img className='w-4' src={assets.mini_player_icon} alt="" />
-        <img className='w-4' src={assets.zoom_icon} alt="" />
+        <input 
+          type="range" 
+          min="0" 
+          max="1" 
+          step="0.01" 
+          defaultValue="1"
+          onChange={(e) => {
+            if (audioRef && audioRef.current) {
+              audioRef.current.volume = e.target.value;
+            }
+          }}
+          className='w-20 h-1 accent-green-500 cursor-pointer' 
+        />
       </div>
     </div>
   )

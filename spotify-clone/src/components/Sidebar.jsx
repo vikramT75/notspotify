@@ -26,19 +26,19 @@ const Sidebar = () => {
                 <p className='font-semibold'>Your Library</p>
             </div>
             <div className='flex items-center gap-3'>
-                <img className='w-5' src={assets.arrow_icon} alt="" />
                 <img className='w-5' src={assets.plus_icon} alt="" />
             </div>
         </div>
-        <div className='p-4 bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 pl-4'>
-            <h1>Create your first playlist</h1>
-            <p className='font-light'>it's easy we will help you</p>
-            <button className='px-4 py-1.5 bg-white text-[15px] text-black rounded-full mt-4'>Create Playlist</button>
-        </div>
-        <div className='p-4 bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 pl-4 mt-4'>
-            <h1>Let's findsome podcasts to follow</h1>
-            <p className='font-light'>we'll keep you update on new episodes</p>
-            <button className='px-4 py-1.5 bg-white text-[15px] text-black rounded-full mt-4'>Browse podcasts</button>
+        <div className='p-2 flex flex-col gap-2'>
+            <div className='flex items-center gap-4 p-2 hover:bg-[#242424] rounded cursor-pointer'>
+                <div className='w-12 h-12 bg-gradient-to-br from-indigo-600 to-blue-300 flex items-center justify-center rounded'>
+                    <svg role="img" height="20" width="20" viewBox="0 0 24 24" fill="white"><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.438-.283-1.791-1.509-4.303-3.752C5.152 14.081 2.5 12.194 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.117 1.763s.278-.588 1.117-1.763a4.21 4.21 0 0 1 3.675-1.941z"></path></svg>
+                </div>
+                <div>
+                    <p className='font-semibold'>Liked Songs</p>
+                    <p className='text-sm text-zinc-400'>Playlist</p>
+                </div>
+            </div>
         </div>
       </div>
     </div>

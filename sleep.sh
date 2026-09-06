@@ -22,7 +22,7 @@ echo -e "\n\033[1;33m4. Scaling EC2 worker nodes to 0 (Stops EC2 compute charges
 aws eks update-nodegroup-config \
   --cluster-name notspotify-eks \
   --nodegroup-name "$NODEGROUP" \
-  --scaling-config minSize=0,maxSize=0,desiredSize=0 \
+  --scaling-config minSize=0,maxSize=1,desiredSize=0 \
   --region us-east-1 > /dev/null
 
 echo -e "\n\033[1;32m=============================================\033[0m"

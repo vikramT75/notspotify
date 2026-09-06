@@ -43,3 +43,4 @@ terraform.tfvars
 
 # Documentation
 phases/
+cloudinary-secret.yaml

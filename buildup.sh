@@ -16,7 +16,16 @@ echo -e "\n\033[1;33m2. Updating local kubeconfig...\033[0m"
 aws eks update-kubeconfig --region us-east-1 --name notspotify-eks
 
 echo -e "\n\033[1;33m3. Applying Cloudinary Secrets...\033[0m"
-kubectl apply -f k8s/cloudinary-secret.yaml
+# The backend needs these secrets to connect to Cloudinary for song/album uploads!
+if [ -f "k8s/cloudinary-secret.yaml" ]; then
+    kubectl create namespace notspotify --dry-run=client -o yaml | kubectl apply -f -
+    kubectl apply -f k8s/cloudinary-secret.yaml
+else
+    echo -e "\033[1;31mWARNING: k8s/cloudinary-secret.yaml not found!\033[0m"
+    echo -e "\033[0;37mThe backend pods will fail to start (CrashLoopBackOff) without Cloudinary credentials.\033[0m"
+    echo -e "\033[0;37mPlease copy 'k8s/cloudinary-secret.yaml.example' to 'k8s/cloudinary-secret.yaml', fill in your real API keys, and run 'kubectl apply -f k8s/cloudinary-secret.yaml' after this script finishes.\033[0m"
+    sleep 5
+fi
 
 echo -e "\n\033[1;33m4. Installing Ingress-Nginx Load Balancer...\033[0m"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx

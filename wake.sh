@@ -21,9 +21,8 @@ echo -e "\n\033[1;35mWaiting 45 seconds for AWS to boot the EC2 servers...\033[0
 sleep 45
 
 echo -e "\n\033[1;33m3. Waking up all Kubernetes Pods...\033[0m"
-kubectl scale deployment --all --replicas=2 -n notspotify || true
-kubectl scale statefulset --all --replicas=1 -n notspotify || true
 kubectl scale deployment --all --replicas=1 -n argocd || true
+kubectl scale statefulset --all --replicas=1 -n argocd || true
 
 echo -e "\n\033[1;33m4. Restoring Ingress Load Balancer...\033[0m"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx

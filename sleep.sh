@@ -10,9 +10,10 @@ echo -e "\033[1;33m1. Deleting Ingress Load Balancer (Stops ELB charges)...\033[
 helm uninstall ingress-nginx -n ingress-nginx || true
 
 echo -e "\n\033[1;33m2. Scaling all Kubernetes Pods to 0...\033[0m"
+kubectl scale deployment --all --replicas=0 -n argocd || true
+kubectl scale statefulset --all --replicas=0 -n argocd || true
 kubectl scale deployment --all --replicas=0 -n notspotify || true
 kubectl scale statefulset --all --replicas=0 -n notspotify || true
-kubectl scale deployment --all --replicas=0 -n argocd || true
 
 echo -e "\n\033[1;33m3. Finding EKS Nodegroup name...\033[0m"
 NODEGROUP=$(aws eks list-nodegroups --cluster-name notspotify-eks --region us-east-1 --query 'nodegroups[0]' --output text)

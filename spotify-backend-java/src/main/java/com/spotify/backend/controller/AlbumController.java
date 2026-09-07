@@ -1,7 +1,9 @@
 package com.spotify.backend.controller;
 
 import com.spotify.backend.entity.Album;
+import com.spotify.backend.entity.Song;
 import com.spotify.backend.repository.AlbumRepository;
+import com.spotify.backend.repository.SongRepository;
 import com.spotify.backend.service.CloudinaryService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/album")
@@ -16,10 +19,12 @@ public class AlbumController {
 
     private final AlbumRepository albumRepository;
     private final CloudinaryService cloudinaryService;
+    private final SongRepository songRepository;
 
-    public AlbumController(AlbumRepository albumRepository, CloudinaryService cloudinaryService) {
+    public AlbumController(AlbumRepository albumRepository, CloudinaryService cloudinaryService, SongRepository songRepository) {
         this.albumRepository = albumRepository;
         this.cloudinaryService = cloudinaryService;
+        this.songRepository = songRepository;
     }
 
     @PostMapping("/add")
@@ -66,9 +71,18 @@ public class AlbumController {
         Map<String, Object> response = new HashMap<>();
         try {
             String id = request.get("id");
-            albumRepository.deleteById(id);
-            response.put("success", true);
-            response.put("message", "Album Removed");
+            Optional<Album> albumOpt = albumRepository.findById(id);
+            if (albumOpt.isPresent()) {
+                String albumName = albumOpt.get().getName();
+                List<Song> songs = songRepository.findByAlbum(albumName);
+                songRepository.deleteAll(songs);
+                albumRepository.deleteById(id);
+                response.put("success", true);
+                response.put("message", "Album and its songs removed");
+            } else {
+                response.put("success", false);
+                response.put("message", "Album not found");
+            }
         } catch (Exception e) {
             response.put("success", false);
         }

@@ -125,7 +125,7 @@ const AddSong = () => {
         <p>Album type</p>
         <select className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[150px]' onChange={(e) => setAlbum(e.target.value)} defaultValue={album} >
           <option value="Single">Single</option>
-          {albumData.map((item, index) => (<option key={index} value={item.name}>{item.name}</option>))}
+          {albumData.map((item, index) => (<option key={index} value={item._id || item.id}>{item.name}</option>))}
         </select>
       </div>
 

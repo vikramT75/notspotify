@@ -29,13 +29,7 @@ const DisplayAlbum = () => {
             <h2 className='text-5xl font-bold mb-4 md:text-7xl'>{albumData.name}</h2>
             <h4>{albumData.desc}</h4>
             <p className='mt-1 text-sm text-gray-300'>Collaborators: {albumData.collaborators || "None"}</p>
-            <p className='mt-1'>
-                <img className='inline-block w-5 mr-1' src={assets.spotify_logo} alt="" />
-                <b>NotSpotify</b>
-                • 1,323,154 likes
-                • <b>50 songs, </b>
-                about 2 hr 30 min
-            </p>
+
         </div>
       </div>
       <div className='grid grid-cols-3 sm:grid-cols-4 mt-10 mb-4 pl-2 text-[#a7a7a7]'>

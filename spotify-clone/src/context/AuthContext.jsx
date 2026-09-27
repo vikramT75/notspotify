@@ -5,6 +5,7 @@ import axios from "axios";
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
+    const url = process.env.NEXT_PUBLIC_API_URL || '';
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);

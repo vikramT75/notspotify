@@ -242,7 +242,8 @@ const PlayerContextProvider = (props) => {
         playWithId,
         previous, next,
         seekSong,
-        songsData, albumsData
+        songsData, albumsData,
+        url
     };
 
     return (

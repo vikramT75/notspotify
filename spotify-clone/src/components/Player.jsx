@@ -163,8 +163,12 @@ const Player = () => {
           max='1'
           step='0.01'
           defaultValue='1'
-          onChange={(e) => { if (audioRef?.current) audioRef.current.volume = e.target.value }}
-          className='w-20 h-1 accent-[#1db954] cursor-pointer'
+          style={{ background: 'linear-gradient(to right, white 100%, #3a3a3a 100%)' }}
+          onChange={(e) => { 
+            if (audioRef?.current) audioRef.current.volume = e.target.value;
+            e.target.style.background = `linear-gradient(to right, white ${e.target.value * 100}%, #3a3a3a ${e.target.value * 100}%)`;
+          }}
+          className='w-20 h-1 cursor-pointer hover:accent-[#1db954]'
         />
       </div>
     </div>

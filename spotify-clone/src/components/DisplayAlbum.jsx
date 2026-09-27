@@ -2,75 +2,71 @@
 import React, { useContext, useState, useEffect } from 'react'
 import Navbar from './Navbar'
 import { useParams } from 'next/navigation'
-import { assets } from '../assets/assets';
-import { PlayerContext } from '../context/PlayerContext';
-import { AuthContext } from '../context/AuthContext';
+import { PlayerContext } from '../context/PlayerContext'
+import { AuthContext } from '../context/AuthContext'
+import { TrackList } from './DisplayLikedSongs'
 
 const DisplayAlbum = () => {
-    const {id} = useParams();
-    const [albumData,setAlbumData] = useState("")
-    const {playWithId,albumsData,songsData} = useContext(PlayerContext);
-    const { user, likedSongs, toggleLike } = useContext(AuthContext);
-    
-    useEffect(()=>{
-      albumsData.forEach((item)=>{
-        const itemId = item._id !== undefined ? item._id : item.id;
-        if (String(itemId) === String(id)) {
-          setAlbumData(item);
-        }
-      })
-    },[albumsData, id])
+  const { id } = useParams()
+  const { playWithId, albumsData, songsData } = useContext(PlayerContext)
+  const { user, likedSongs, toggleLike } = useContext(AuthContext)
+  const [albumData, setAlbumData] = useState(null)
 
-  return albumData ? (
+  useEffect(() => {
+    const found = albumsData.find(item => {
+      const itemId = item._id !== undefined ? item._id : item.id
+      return String(itemId) === String(id)
+    })
+    if (found) setAlbumData(found)
+  }, [albumsData, id])
+
+  if (!albumData) {
+    return (
+      <>
+        <Navbar />
+        <div className='flex items-center justify-center h-40 text-zinc-600 text-sm'>Loading album…</div>
+      </>
+    )
+  }
+
+  const albumTracks = songsData.filter(item => item.album === albumData.name || !item.album)
+
+  return (
     <>
-      <Navbar/>
-      <div className='mt-10 flex gap-8 flex-col md:flex-row md:items-end'>
-        <img className='w-48 rounded' src={albumData.image} alt="" />
-        <div className='flex flex-col'>
-            <p>Playlist</p>
-            <h2 className='text-5xl font-bold mb-4 md:text-7xl'>{albumData.name}</h2>
-            <h4>{albumData.desc}</h4>
-            <p className='mt-1 text-sm text-gray-300'>Collaborators: {albumData.collaborators || "None"}</p>
+      <Navbar />
 
+      {/* Header */}
+      <div className='flex items-end gap-6 mb-8'>
+        <img
+          className='w-36 h-36 rounded-lg object-cover shadow-lg flex-shrink-0'
+          src={albumData.image}
+          alt={albumData.name}
+        />
+        <div>
+          <p className='text-xs text-zinc-500 uppercase tracking-wider mb-1'>Album</p>
+          <h1 className='text-3xl font-bold text-white mb-1'>{albumData.name}</h1>
+          {albumData.desc && <p className='text-sm text-zinc-400 mb-1'>{albumData.desc}</p>}
+          {albumData.collaborators && (
+            <p className='text-sm text-zinc-500'>
+              {albumData.collaborators !== 'None' && albumData.collaborators}
+            </p>
+          )}
+          <p className='text-sm text-zinc-500 mt-1'>{albumTracks.length} {albumTracks.length === 1 ? 'track' : 'tracks'}</p>
         </div>
       </div>
-      <div className='grid grid-cols-4 sm:grid-cols-5 mt-10 mb-4 pl-2 text-[#a7a7a7]'>
-        <p><b className='mr-4'>#</b>Title</p>
-        <p>Album</p>
-        <p className='hidden sm:block'>Date Added</p>
-        <img className='m-auto w-4' src={assets.clock_icon} alt="" />
-        <p className='text-center'>Like</p>
-      </div>
-      <hr />
-      {
-        songsData.filter((item)=>item.album === albumData.name || !item.album).map((item,index)=>{
-            const isLiked = likedSongs.some(s => s._id === (item._id !== undefined ? item._id : item.id));
-            return (
-            <div key={index} className='grid grid-cols-4 sm:grid-cols-5 gap-2 p-2 items-center text-[#a7a7a7] hover:bg-[#ffffff2b] group'>
-                <p className='text-white cursor-pointer' onClick={()=>playWithId(item._id !== undefined ? item._id : item.id)}>
-                    <b className='mr-4 text-[#a7a7a7]'>{index+1}</b>
-                    <img className='inline w-10 mr-5' src={item.image} alt="" />
-                    {item.name}
-                </p>
-                <p className='text-[15px]'>{albumData.name}</p>
-                <p className='text-[15px] hidden sm:block'>{item.releaseDate || "5 days ago"}</p>
-                <p className='text-[15px] text-center'>{item.duration}</p>
-                <div className='flex justify-center'>
-                    {user && (
-                        <img 
-                            onClick={() => toggleLike(item)} 
-                            className={`w-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity ${isLiked ? 'opacity-100 filter sepia brightness-200 hue-rotate-90 saturate-200' : ''}`} 
-                            src={assets.like_icon} 
-                            alt="like" 
-                        />
-                    )}
-                </div>
-            </div>
-            )
-        })
-      }
+
+      {albumTracks.length === 0 ? (
+        <p className='text-zinc-600 text-sm'>No tracks found for this album.</p>
+      ) : (
+        <TrackList
+          tracks={albumTracks}
+          onPlay={playWithId}
+          onToggleLike={toggleLike}
+          likedSongs={likedSongs}
+        />
+      )}
     </>
-  ) : null
+  )
 }
 
 export default DisplayAlbum

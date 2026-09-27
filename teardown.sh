@@ -18,9 +18,9 @@ helm uninstall notspotify -n notspotify --wait=false || true
 kubectl delete namespace argocd --wait=false || true
 kubectl delete namespace notspotify --wait=false || true
 
-echo -e "\n\033[1;33m3. Deleting Persistent Volume Claims...\033[0m"
-echo -e "\033[0;37m   (This cleans up any lingering AWS EBS volumes)\033[0m"
-kubectl delete pvc --all -A || true
+echo -e "\n\033[1;33m3. Skipping Persistent Volume Claims deletion...\033[0m"
+echo -e "\033[0;37m   (Keeping AWS EBS volumes for persistence - Note: these must be manually reclaimed later!)\033[0m"
+# kubectl delete pvc --all -A || true
 
 echo -e "\n\033[1;33m4. Destroying Terraform infrastructure...\033[0m"
 cd terraform

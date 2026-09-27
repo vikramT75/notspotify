@@ -44,7 +44,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> 
                 auth.requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/song/list", "/api/album/list", "/api/search**", "/api/artist/**").permitAll()
+                    .requestMatchers("/api/song/list", "/api/album/list", "/api/search", "/api/song/artist/**").permitAll()
                     .requestMatchers("/api/song/add", "/api/song/remove", "/api/album/add", "/api/album/remove").hasRole("ADMIN")
                     .anyRequest().authenticated()
             );

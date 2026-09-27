@@ -28,7 +28,7 @@ const SongItem = ({name,image,desc,id,artistName, song}) => {
       {user && song && (
         <img 
             onClick={(e) => { e.stopPropagation(); toggleLike(song); }} 
-            className={`absolute top-4 right-4 w-6 p-1 bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity ${isLiked ? 'opacity-100' : ''}`} 
+            className={`absolute top-4 right-4 w-6 p-1 bg-black/50 rounded-full cursor-pointer transition-opacity ${isLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} 
             style={isLiked ? { filter: 'invert(53%) sepia(43%) saturate(5838%) hue-rotate(114deg) brightness(99%) contrast(99%)' } : {}}
             src={assets.like_icon} 
             alt="like" 

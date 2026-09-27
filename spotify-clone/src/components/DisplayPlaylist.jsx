@@ -61,7 +61,7 @@ const DisplayPlaylist = () => {
             <p>Playlist</p>
             <h2 className='text-5xl font-bold mb-4 md:text-7xl'>{playlistData.name}</h2>
             <h4>{playlistData.description}</h4>
-            <p className='mt-1 text-sm text-gray-300'>{playlistData.user.username} • {playlistData.songs.length} songs</p>
+            <p className='mt-1 text-sm text-gray-300'>{playlistData.user?.username} • {playlistData.songs?.length ?? 0} songs</p>
         </div>
       </div>
       <div className='grid grid-cols-4 sm:grid-cols-5 mt-10 mb-4 pl-2 text-[#a7a7a7]'>
@@ -73,7 +73,7 @@ const DisplayPlaylist = () => {
       </div>
       <hr />
       {
-        playlistData.songs.map((item,index)=>{
+        (playlistData.songs || []).map((item,index)=>{
             const isLiked = likedSongs.some(s => s._id === (item._id !== undefined ? item._id : item.id));
             return (
             <div key={index} className='grid grid-cols-4 sm:grid-cols-5 gap-2 p-2 items-center text-[#a7a7a7] hover:bg-[#ffffff2b] group'>
@@ -89,13 +89,13 @@ const DisplayPlaylist = () => {
                     {user && (
                         <img 
                             onClick={(e) => { e.stopPropagation(); toggleLike(item); }} 
-                            className={`w-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity ${isLiked ? 'opacity-100' : ''}`} 
+                            className={`w-4 cursor-pointer transition-opacity ${isLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} 
                             style={isLiked ? { filter: 'invert(53%) sepia(43%) saturate(5838%) hue-rotate(114deg) brightness(99%) contrast(99%)' } : {}}
                             src={assets.like_icon} 
                             alt="like" 
                         />
                     )}
-                    {user && user.username === playlistData.user.username && (
+                    {user && user.username === playlistData.user?.username && (
                         <span onClick={(e) => handleRemoveSong(item._id || item.id, e)} className="cursor-pointer text-xs text-red-500 opacity-0 group-hover:opacity-100 hover:underline">Remove</span>
                     )}
                 </div>
@@ -104,7 +104,11 @@ const DisplayPlaylist = () => {
         })
       }
     </>
-  ) : null
+  ) : (
+    <div className='flex items-center justify-center h-full text-white'>
+      {token ? <p className='text-gray-400'>Loading playlist...</p> : <p className='text-gray-400'>Please log in to view this playlist.</p>}
+    </div>
+  )
 }
 
 export default DisplayPlaylist

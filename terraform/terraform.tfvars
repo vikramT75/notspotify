@@ -1,8 +1,9 @@
 # Copy this file to terraform.tfvars to customize your deployment
 
-aws_region   = "us-east-1"
-environment  = "dev"
-cluster_name = "notspotify-eks"
+aws_region      = "us-east-1"
+environment     = "dev"
+cluster_name    = "notspotify-eks"
+cluster_version = "1.35"
 
 # Default worker node group settings
 node_instance_types = ["t3.medium"]

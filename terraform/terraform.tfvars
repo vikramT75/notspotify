@@ -3,7 +3,7 @@
 aws_region      = "us-east-1"
 environment     = "dev"
 cluster_name    = "notspotify-eks"
-cluster_version = "1.35"
+cluster_version = "1.31"
 
 # Default worker node group settings
 node_instance_types = ["t3.medium"]

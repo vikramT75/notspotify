@@ -53,7 +53,8 @@ const DisplayLikedSongs = () => {
                 <div className='flex justify-center'>
                     <img 
                         onClick={() => toggleLike(item)} 
-                        className={`w-4 cursor-pointer opacity-100 filter sepia brightness-200 hue-rotate-90 saturate-200`} 
+                        className="w-4 cursor-pointer opacity-100" 
+                        style={{ filter: 'invert(53%) sepia(43%) saturate(5838%) hue-rotate(114deg) brightness(99%) contrast(99%)' }}
                         src={assets.like_icon} 
                         alt="unlike" 
                     />

@@ -44,7 +44,8 @@ const Player = () => {
         {user && (
             <img 
               onClick={() => toggleLike(track)} 
-              className={`w-5 cursor-pointer ${isLiked ? 'filter sepia brightness-200 hue-rotate-90 saturate-200' : ''}`} 
+              className="w-5 cursor-pointer" 
+              style={isLiked ? { filter: 'invert(53%) sepia(43%) saturate(5838%) hue-rotate(114deg) brightness(99%) contrast(99%)' } : {}}
               src={assets.like_icon} 
               alt="like" 
             />

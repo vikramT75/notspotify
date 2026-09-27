@@ -96,7 +96,7 @@ public class SongController {
     public Map<String, Object> listSongsByArtist(@PathVariable String artistName) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Song> songs = songRepository.findByArtistName(artistName);
+            List<Song> songs = songRepository.findByArtistNameIgnoreCase(artistName);
             response.put("success", true);
             response.put("songs", songs);
         } catch (Exception e) {

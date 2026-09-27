@@ -16,7 +16,10 @@ const DisplayPlaylist = () => {
     useEffect(() => {
         const fetchPlaylist = async () => {
             try {
-                const response = await axios.get(`${url}/api/playlist/${id}`);
+                if (!token) return; // Wait until token is available
+                const response = await axios.get(`${url}/api/playlist/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 if (response.data.success) {
                     setPlaylistData(response.data.playlist);
                 }
@@ -24,8 +27,10 @@ const DisplayPlaylist = () => {
                 console.error("Failed to fetch playlist", error);
             }
         };
-        fetchPlaylist();
-    }, [id, url]);
+        if (token) {
+            fetchPlaylist();
+        }
+    }, [id, url, token]);
 
     const handleRemoveSong = async (songId, e) => {
         e.stopPropagation();
@@ -84,7 +89,8 @@ const DisplayPlaylist = () => {
                     {user && (
                         <img 
                             onClick={(e) => { e.stopPropagation(); toggleLike(item); }} 
-                            className={`w-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity ${isLiked ? 'opacity-100 filter sepia brightness-200 hue-rotate-90 saturate-200' : ''}`} 
+                            className={`w-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity ${isLiked ? 'opacity-100' : ''}`} 
+                            style={isLiked ? { filter: 'invert(53%) sepia(43%) saturate(5838%) hue-rotate(114deg) brightness(99%) contrast(99%)' } : {}}
                             src={assets.like_icon} 
                             alt="like" 
                         />

@@ -66,6 +66,16 @@ const PlayerContextProvider = (props) => {
 
         if (selectedTrack && audioRef.current) {
             setTrack(selectedTrack);
+            
+            // Save to recently played
+            try {
+                let history = JSON.parse(localStorage.getItem("recentSongs")) || [];
+                history = history.filter(s => (s._id || s.id) !== (selectedTrack._id || selectedTrack.id)); // remove if exists
+                history.unshift(selectedTrack); // add to top
+                if (history.length > 10) history.pop(); // keep last 10
+                localStorage.setItem("recentSongs", JSON.stringify(history));
+            } catch(e) {}
+            
             const targetSrc = sanitizeUrl(selectedTrack.file);
             if (targetSrc) {
                 audioRef.current.src = targetSrc;

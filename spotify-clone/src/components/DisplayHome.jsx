@@ -10,6 +10,14 @@ import { PlayerContext } from '../context/PlayerContext'
 const DisplayHome = () => {
 
   const { songsData,albumsData } = useContext(PlayerContext);
+  const [recentSongs, setRecentSongs] = React.useState([]);
+
+  React.useEffect(() => {
+      try {
+          const saved = localStorage.getItem("recentSongs");
+          if (saved) setRecentSongs(JSON.parse(saved));
+      } catch(e) {}
+  }, []);
 
   return (
     <>
@@ -22,10 +30,19 @@ const DisplayHome = () => {
      </div>
      <div className='mb-4'>
       <h1 className='my-5 font-bold text-2xl'>Today's biggest hits</h1>
-      <div className='flex overflow-auto'>
-          {songsData.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item._id !== undefined ? item._id : item.id} image={item.image} artistName={item.artistName} />))}
+      <div className='flex overflow-auto gap-4'>
+          {songsData.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item._id !== undefined ? item._id : item.id} image={item.image} artistName={item.artistName} song={item} />))}
       </div>
      </div>
+     
+     {recentSongs.length > 0 && (
+     <div className='mb-4'>
+      <h1 className='my-5 font-bold text-2xl'>Recently Played</h1>
+      <div className='flex overflow-auto gap-4'>
+          {recentSongs.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item._id !== undefined ? item._id : item.id} image={item.image} artistName={item.artistName} song={item} />))}
+      </div>
+     </div>
+     )}
     </>
   )
 }

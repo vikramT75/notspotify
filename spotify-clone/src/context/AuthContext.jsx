@@ -9,7 +9,20 @@ export const AuthContextProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const url = process.env.NEXT_PUBLIC_API_URL || "";
+    const [likedSongs, setLikedSongs] = useState([]);
+
+    const fetchLikedSongs = async (currentToken) => {
+        try {
+            const response = await axios.get(`${url}/api/user/liked-songs`, {
+                headers: { Authorization: `Bearer ${currentToken}` }
+            });
+            if (response.data.success) {
+                setLikedSongs(response.data.likedSongs);
+            }
+        } catch (error) {
+            console.error("Failed to fetch liked songs:", error);
+        }
+    };
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -18,6 +31,7 @@ export const AuthContextProvider = ({ children }) => {
         if (storedToken && storedUser) {
             setToken(storedToken);
             setUser(JSON.parse(storedUser));
+            fetchLikedSongs(storedToken);
         }
         setLoading(false);
     }, []);
@@ -33,6 +47,7 @@ export const AuthContextProvider = ({ children }) => {
             
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(userData));
+            await fetchLikedSongs(token);
             window.location.reload();
             return { success: true };
         } catch (error) {
@@ -52,13 +67,38 @@ export const AuthContextProvider = ({ children }) => {
     const logout = () => {
         setToken(null);
         setUser(null);
+        setLikedSongs([]);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.reload();
     };
 
+    const toggleLike = async (song) => {
+        if (!token) return { success: false, message: "Please login to like songs" };
+        
+        const isLiked = likedSongs.some(s => s._id === song._id);
+        const endpoint = isLiked ? "unlike-song" : "like-song";
+        
+        try {
+            const response = await axios.post(`${url}/api/user/${endpoint}`, { songId: song._id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                if (isLiked) {
+                    setLikedSongs(prev => prev.filter(s => s._id !== song._id));
+                } else {
+                    setLikedSongs(prev => [...prev, song]);
+                }
+            }
+            return response.data;
+        } catch (error) {
+            console.error("Error toggling like:", error);
+            return { success: false, message: "Error" };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+        <AuthContext.Provider value={{ user, token, loading, login, signup, logout, likedSongs, toggleLike }}>
             {children}
         </AuthContext.Provider>
     );

@@ -91,4 +91,17 @@ public class SongController {
         }
         return response;
     }
+
+    @GetMapping("/artist/{artistName}")
+    public Map<String, Object> listSongsByArtist(@PathVariable String artistName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Song> songs = songRepository.findByArtistName(artistName);
+            response.put("success", true);
+            response.put("songs", songs);
+        } catch (Exception e) {
+            response.put("success", false);
+        }
+        return response;
+    }
 }

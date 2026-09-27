@@ -2,6 +2,8 @@ package com.spotify.backend.entity;
 
 import jakarta.persistence.*;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "users") // 'user' is often a reserved keyword in Postgres
@@ -21,6 +23,14 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_liked_songs",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private Set<Song> likedSongs = new HashSet<>();
 
     public User() {
     }
@@ -70,5 +80,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Set<Song> getLikedSongs() {
+        return likedSongs;
+    }
+
+    public void setLikedSongs(Set<Song> likedSongs) {
+        this.likedSongs = likedSongs;
     }
 }

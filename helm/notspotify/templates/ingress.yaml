@@ -11,6 +11,36 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
+    {{- if .Values.ingress.host }}
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          # /api/* → Spring Boot backend (full path forwarded, no rewrite)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
+          # /admin/* → Next.js admin (full path forwarded so basePath works)
+          # Next.js basePath: '/admin' makes static assets generate as /admin/_next/...
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-admin
+                port:
+                  number: {{ .Values.admin.service.port }}
+          # /* → Next.js clone frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-clone
+                port:
+                  number: {{ .Values.clone.service.port }}
+    {{- end }}
     - http:
         paths:
           # /api/* → Spring Boot backend (full path forwarded, no rewrite)

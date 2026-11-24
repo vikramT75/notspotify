@@ -48,6 +48,16 @@ else
     helm upgrade --install notspotify ./helm/notspotify --namespace notspotify --create-namespace
 fi
 
+echo -e "\n\033[1;33m7. Setting up ExternalDNS (Cloudflare)...\033[0m"
+if [ -f "k8s/external-dns/cloudflare-secret.yaml" ]; then
+    kubectl apply -f k8s/external-dns/cloudflare-secret.yaml
+    kubectl apply -f k8s/external-dns/external-dns.yaml
+    echo -e "\033[1;32mExternalDNS deployed! Cloudflare will sync your domain automatically.\033[0m"
+else
+    echo -e "\033[1;35mNotice: k8s/external-dns/cloudflare-secret.yaml not found. Skipping ExternalDNS setup.\033[0m"
+    echo -e "\033[0;37m(To automate custom domain sync, copy 'k8s/external-dns/cloudflare-secret.yaml.example' to 'k8s/external-dns/cloudflare-secret.yaml' and add your Cloudflare token)\033[0m"
+fi
+
 echo -e "\n\033[1;32m=============================================\033[0m"
 echo -e "\033[1;32m   Build complete! Cluster is spinning up!   \033[0m"
 echo -e "\033[1;32m=============================================\033[0m"

@@ -8,7 +8,7 @@ import axios from 'axios'
 const AddAlbum = () => {
 
   const [image, setImage] = useState(false);
-  const [colour, setColour] = useState("");
+  const [colour, setColour] = useState("#121212");
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [collaborators, setCollaborators] = useState("");
@@ -18,6 +18,11 @@ const AddAlbum = () => {
   const onSubmitHandler = async (e) => {
 
     e.preventDefault();
+
+    if (!image) {
+      toast.error("Please select an album cover image.");
+      return;
+    }
 
     setLoading(true);
 
@@ -43,14 +48,17 @@ const AddAlbum = () => {
         setImage(false);
       }
       else {
-        toast.error("Something went wrong");
+        toast.error(response.data.message || "Something went wrong");
       }
 
       setLoading(false);
 
     } catch (error) {
 
-      toast.error("Error occured");
+      const msg = error.response?.status === 401 || error.response?.status === 403
+        ? "Session expired or unauthorized. Please log in again."
+        : (error.response?.data?.message || "Error occured");
+      toast.error(msg);
       setLoading(false);
 
     }

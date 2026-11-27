@@ -4,6 +4,20 @@ import axios from "axios";
 
 export const AuthContext = createContext();
 
+export const isTokenExpired = (jwt) => {
+    if (!jwt || typeof jwt !== "string") return true;
+    try {
+        const parts = jwt.split(".");
+        if (parts.length !== 3) return true;
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const payload = JSON.parse(atob(padded));
+        return !payload.exp || payload.exp * 1000 <= Date.now();
+    } catch {
+        return true;
+    }
+};
+
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
@@ -11,14 +25,24 @@ export const AuthContextProvider = ({ children }) => {
 
     const url = process.env.NEXT_PUBLIC_API_URL || "";
 
+    const clearSession = () => {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+    };
+
     useEffect(() => {
         try {
             const storedToken = localStorage.getItem("token");
             const storedUser = localStorage.getItem("user");
 
-            if (storedToken && storedUser) {
+            if (storedToken && storedUser && !isTokenExpired(storedToken)) {
                 setToken(storedToken);
                 setUser(JSON.parse(storedUser));
+            } else if (storedToken || storedUser) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
             }
         } catch (e) {
             // Stale or malformed data in localStorage — wipe and start fresh
@@ -34,16 +58,19 @@ export const AuthContextProvider = ({ children }) => {
     const login = async (username, password) => {
         try {
             const response = await axios.post(`${url}/api/auth/login`, { username, password });
-            const { token, role, email } = response.data;
+            const { token: newToken, role, email } = response.data;
             
             const userData = { email, username, role };
-            setToken(token);
+            if (role !== "ADMIN") {
+                return { success: false, message: "Access denied. You do not have ADMIN privileges." };
+            }
+
+            setToken(newToken);
             setUser(userData);
             
-            localStorage.setItem("token", token);
+            localStorage.setItem("token", newToken);
             localStorage.setItem("user", JSON.stringify(userData));
-            window.location.reload();
-            return { success: true };
+            return { success: true, user: userData };
         } catch (error) {
             return { success: false, message: error.response?.data || "Login failed" };
         }
@@ -59,15 +86,11 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     const logout = () => {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.reload();
+        clearSession();
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+        <AuthContext.Provider value={{ user, token, loading, login, signup, logout, clearSession }}>
             {children}
         </AuthContext.Provider>
     );

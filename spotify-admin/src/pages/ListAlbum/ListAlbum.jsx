@@ -30,6 +30,8 @@ const ListAlbum = () => {
       if (response.data.success) {
         toast.success(response.data.message);
         await fetchAlbums();
+      } else {
+        toast.error(response.data.message || "Failed to remove album");
       }
 
     } catch (error) {

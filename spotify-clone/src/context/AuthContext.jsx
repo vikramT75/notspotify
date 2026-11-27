@@ -4,6 +4,20 @@ import axios from "axios";
 
 export const AuthContext = createContext();
 
+const isTokenExpired = (jwt) => {
+    if (!jwt || typeof jwt !== "string") return true;
+    try {
+        const parts = jwt.split(".");
+        if (parts.length !== 3) return true;
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const payload = JSON.parse(atob(padded));
+        return !payload.exp || payload.exp * 1000 <= Date.now();
+    } catch {
+        return true;
+    }
+};
+
 export const AuthContextProvider = ({ children }) => {
     const url = process.env.NEXT_PUBLIC_API_URL || '';
     const [user, setUser] = useState(null);
@@ -11,6 +25,14 @@ export const AuthContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     const [likedSongs, setLikedSongs] = useState([]);
+
+    const clearSession = () => {
+        setToken(null);
+        setUser(null);
+        setLikedSongs([]);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+    };
 
     const fetchLikedSongs = async (currentToken) => {
         try {
@@ -21,18 +43,30 @@ export const AuthContextProvider = ({ children }) => {
                 setLikedSongs(response.data.likedSongs);
             }
         } catch (error) {
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                clearSession();
+                return;
+            }
             console.error("Failed to fetch liked songs:", error);
         }
     };
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("token");
-        const storedUser = localStorage.getItem("user");
-        
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-            fetchLikedSongs(storedToken);
+        try {
+            const storedToken = localStorage.getItem("token");
+            const storedUser = localStorage.getItem("user");
+            
+            if (storedToken && storedUser && !isTokenExpired(storedToken)) {
+                setToken(storedToken);
+                setUser(JSON.parse(storedUser));
+                fetchLikedSongs(storedToken);
+            } else if (storedToken || storedUser) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+            }
+        } catch {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
         }
         setLoading(false);
     }, []);
@@ -66,11 +100,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     const logout = () => {
-        setToken(null);
-        setUser(null);
-        setLikedSongs([]);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        clearSession();
         window.location.reload();
     };
 

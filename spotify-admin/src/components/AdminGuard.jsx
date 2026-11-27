@@ -4,20 +4,37 @@ import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 
 const AdminGuard = ({ children }) => {
-    const { user, login, loading, logout } = useContext(AuthContext);
+    const { user, token, login, loading, clearSession } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const interceptor = axios.interceptors.request.use(config => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+        const reqInterceptor = axios.interceptors.request.use(config => {
+            const currentToken = localStorage.getItem('token');
+            if (currentToken) {
+                config.headers.Authorization = `Bearer ${currentToken}`;
             }
             return config;
         });
-        return () => axios.interceptors.request.eject(interceptor);
+
+        const resInterceptor = axios.interceptors.response.use(
+            response => response,
+            err => {
+                const status = err.response?.status;
+                const reqUrl = err.config?.url || '';
+                if ((status === 401 || status === 403) && !reqUrl.includes('/api/auth/')) {
+                    clearSession();
+                    setError("Your session expired or is unauthorized. Please log in again.");
+                }
+                return Promise.reject(err);
+            }
+        );
+
+        return () => {
+            axios.interceptors.request.eject(reqInterceptor);
+            axios.interceptors.response.eject(resInterceptor);
+        };
     }, []);
 
     const handleLogin = async (e) => {
@@ -26,12 +43,6 @@ const AdminGuard = ({ children }) => {
         const res = await login(username, password);
         if (!res.success) {
             setError(res.message.toString());
-        } else {
-            const loggedInUser = JSON.parse(localStorage.getItem('user'));
-            if (loggedInUser.role !== 'ADMIN') {
-                logout();
-                setError("Access denied. You do not have ADMIN privileges.");
-            }
         }
     };
 
@@ -49,7 +60,7 @@ const AdminGuard = ({ children }) => {
     }
 
     // Not authenticated or not ADMIN — show login form
-    if (!user || user.role !== 'ADMIN') {
+    if (!token || !user || user.role !== 'ADMIN') {
         return (
             <div className="min-h-screen bg-[#F3FFF7] flex items-center justify-center p-4">
                 <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">

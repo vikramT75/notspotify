@@ -22,6 +22,7 @@ const PlayerContextProvider = (props) => {
 
     const [songsData, setSongsData] = useState([]);
     const [albumsData, setAlbumData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [track, setTrack] = useState(null);
     const [playStatus, setPlayStatus] = useState(false);
     const [time, setTime] = useState({
@@ -227,8 +228,7 @@ const PlayerContextProvider = (props) => {
     }, [track, songsData]);
 
     useEffect(() => {
-        getSongsData();
-        getAlbumsData();
+        Promise.all([getSongsData(), getAlbumsData()]).finally(() => setLoading(false));
     }, []);
 
     const contextValue = {
@@ -243,6 +243,7 @@ const PlayerContextProvider = (props) => {
         previous, next,
         seekSong,
         songsData, albumsData,
+        loading,
         url
     };
 

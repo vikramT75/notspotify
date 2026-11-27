@@ -32,6 +32,8 @@ const ListSong = () => {
       if (response.data.success) {
         toast.success(response.data.message);
         await fetchSongs();
+      } else {
+        toast.error(response.data.message || "Failed to remove song");
       }
 
     } catch (error) {

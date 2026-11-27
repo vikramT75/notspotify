@@ -21,6 +21,11 @@ const AddSong = () => {
 
     e.preventDefault();
 
+    if (!song || !image) {
+      toast.error("Please select both a song audio file and a cover image.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -48,14 +53,17 @@ const AddSong = () => {
         setSong(false);
       }
       else {
-        toast.error("Something went wrong");
+        toast.error(response.data.message || "Something went wrong");
       }
 
       setLoading(false);
 
     } catch (error) {
 
-      toast.error("Error occured");
+      const msg = error.response?.status === 401 || error.response?.status === 403
+        ? "Session expired or unauthorized. Please log in again."
+        : (error.response?.data?.message || "Error occured");
+      toast.error(msg);
       setLoading(false);
 
     }

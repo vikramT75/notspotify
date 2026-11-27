@@ -5,6 +5,7 @@ import com.spotify.backend.entity.Song;
 import com.spotify.backend.repository.AlbumRepository;
 import com.spotify.backend.repository.SongRepository;
 import com.spotify.backend.service.CloudinaryService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,13 +68,21 @@ public class AlbumController {
     }
 
     @PostMapping("/remove")
+    @Transactional
     public Map<String, Object> removeAlbum(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();
         try {
             String id = request.get("id");
             Optional<Album> albumOpt = albumRepository.findById(id);
             if (albumOpt.isPresent()) {
+                Album album = albumOpt.get();
                 List<Song> songs = songRepository.findByAlbum(id);
+                for (Song song : songs) {
+                    cloudinaryService.deleteSongAssets(song.getFile(), song.getImage());
+                    songRepository.deleteLikedSongLinks(song.getId());
+                    songRepository.deletePlaylistSongLinks(song.getId());
+                }
+                cloudinaryService.deleteByUrl(album.getImage(), "image");
                 songRepository.deleteAll(songs);
                 albumRepository.deleteById(id);
                 response.put("success", true);

@@ -3,12 +3,14 @@ package com.spotify.backend.controller;
 import com.spotify.backend.entity.Song;
 import com.spotify.backend.repository.SongRepository;
 import com.spotify.backend.service.CloudinaryService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/song")
@@ -79,11 +81,24 @@ public class SongController {
     }
 
     @PostMapping("/remove")
+    @Transactional
     public Map<String, Object> removeSong(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();
         try {
             String id = request.get("id");
+            Optional<Song> songOpt = songRepository.findById(id);
+            if (songOpt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Song not found");
+                return response;
+            }
+
+            Song song = songOpt.get();
+            cloudinaryService.deleteSongAssets(song.getFile(), song.getImage());
+            songRepository.deleteLikedSongLinks(id);
+            songRepository.deletePlaylistSongLinks(id);
             songRepository.deleteById(id);
+
             response.put("success", true);
             response.put("message", "Song Remove");
         } catch (Exception e) {

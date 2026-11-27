@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import { PlayerContext } from '../context/PlayerContext'
 
 const DisplayHome = () => {
-  const { songsData, albumsData } = useContext(PlayerContext)
+  const { songsData, albumsData, loading } = useContext(PlayerContext)
   const [recentSongs, setRecentSongs] = React.useState([])
 
   React.useEffect(() => {
@@ -69,10 +69,15 @@ const DisplayHome = () => {
         </Section>
       )}
 
-      {/* Empty state */}
-      {songsData.length === 0 && albumsData.length === 0 && (
+      {/* Loading / Empty state */}
+      {loading && songsData.length === 0 && albumsData.length === 0 && (
         <div className='flex items-center justify-center h-40 text-zinc-600 text-sm'>
           Loading music…
+        </div>
+      )}
+      {!loading && songsData.length === 0 && albumsData.length === 0 && (
+        <div className='flex items-center justify-center h-40 text-zinc-500 text-sm'>
+          No music available yet. Add songs or albums from the admin panel.
         </div>
       )}
     </>

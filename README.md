@@ -79,6 +79,8 @@ All three services run as separate Kubernetes Deployments inside the `notspotify
 | **Packaging**              | Helm 3                                                   |
 | **GitOps**                 | ArgoCD                                                   |
 | **CI/CD**                  | GitHub Actions                                           |
+| **Testing**                | JUnit 5, Spring MockMvc, H2, Playwright (Chromium)       |
+| **DNS & Edge TLS**         | ExternalDNS (Cloudflare)                                 |
 | **Infrastructure-as-Code** | Terraform (AWS provider)                                 |
 | **Node Autoscaling**       | Karpenter v0.37.0                                        |
 | **Pod Autoscaling**        | Kubernetes HPA                                           |
@@ -92,25 +94,28 @@ All three services run as separate Kubernetes Deployments inside the `notspotify
 spotify-full-stack/
 │
 ├── spotify-backend-java/          # Spring Boot REST API
-│   └── src/main/java/com/spotify/backend/
-│       ├── controller/            # REST endpoints (Auth, Song, Album, Search, User, Playlist)
-│       ├── entity/                # JPA entities: User, Song, Album, Playlist
-│       ├── repository/            # Spring Data JPA repositories
-│       ├── security/              # JwtUtils, JwtAuthFilter, UserDetailsServiceImpl, SecurityConfig
-│       ├── service/               # CloudinaryService
-│       └── config/                # CORS (WebConfig), Cloudinary, DataInitializer
+│   ├── src/main/java/com/spotify/backend/
+│   │   ├── controller/            # REST endpoints (Auth, Song, Album, Search, User, Playlist)
+│   │   ├── entity/                # JPA entities: User, Song, Album, Playlist
+│   │   ├── repository/            # Spring Data JPA repositories
+│   │   ├── security/              # JwtUtils, JwtAuthFilter, UserDetailsServiceImpl, SecurityConfig
+│   │   ├── service/               # CloudinaryService
+│   │   └── config/                # CORS (WebConfig), Cloudinary, DataInitializer
+│   └── src/test/java/com/spotify/backend/ # JUnit 5 + MockMvc unit & API integration tests
 │
 ├── spotify-clone/                 # Next.js user-facing app (port 3000)
-│   └── src/
-│       ├── app/                   # App Router pages: /, /search, /album/[id], /artist/[id],
-│       │                          #   /playlist/[id], /liked-songs
-│       ├── components/            # AlbumItem, AuthModal, ClientAppWrapper, DisplayAlbum,
-│       │                          #   DisplayArtist, DisplayHome, DisplayLikedSongs,
-│       │                          #   DisplayPlaylist, DisplaySearch, DisplayWrapper,
-│       │                          #   Navbar, Player, Sidebar, SongItem
-│       └── context/               # PlayerContext, AuthContext
+│   ├── src/
+│   │   ├── app/                   # App Router pages: /, /search, /album/[id], /artist/[id],
+│   │   │                          #   /playlist/[id], /liked-songs
+│   │   ├── components/            # AlbumItem, AuthModal, ClientAppWrapper, DisplayAlbum,
+│   │   │                          #   DisplayArtist, DisplayHome, DisplayLikedSongs,
+│   │   │                          #   DisplayPlaylist, DisplaySearch, DisplayWrapper,
+│   │   │                          #   Navbar, Player, Sidebar, SongItem
+│   │   └── context/               # PlayerContext, AuthContext
+│   └── e2e/                       # Playwright Chromium E2E specs & API fixtures
 │
 ├── spotify-admin/                 # Next.js admin dashboard (port 3001)
+│   └── e2e/                       # Playwright Chromium admin RBAC & CRUD specs
 │
 ├── helm/notspotify/               # Helm chart - packages the full stack for Kubernetes
 │   ├── Chart.yaml
@@ -128,6 +133,7 @@ spotify-full-stack/
 │   ├── autoscaling/
 │   │   ├── hpa.yaml                     # HPA for backend (2–10), clone (2–8), admin (1–3)
 │   │   └── karpenter-nodepool.yaml      # Karpenter NodePool + EC2NodeClass
+│   ├── external-dns/external-dns.yaml   # Cloudflare DNS automation for Ingress
 │   └── observability/
 │       ├── otel-collector.yaml          # OpenTelemetry Collector (OTLP → Jaeger)
 │       ├── instrumentation.yaml         # Auto-instrumentation config
@@ -655,6 +661,7 @@ Song audio files and all cover images are stored on **Cloudinary**. The backend 
 - Audio files are uploaded as `resource_type: video` (Cloudinary's umbrella type for audio).
 - Audio duration is extracted from Cloudinary's upload response and stored as `m:ss`.
 - The maximum upload size is **50 MB** per file, enforced in `application.properties`.
+- Deleting a song or album also removes its associated Cloudinary audio/image assets and cleans up liked-song and playlist references.
 
 ---
 
@@ -719,12 +726,12 @@ The pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) triggers 
 
 ### Testing
 
-- **Backend unit & API integration tests (`spotify-backend-java/`):** Uses JUnit 5, Spring Boot `MockMvc`, and an in-memory H2 database (`MODE=PostgreSQL` via `application-test.properties`) with `CloudinaryService` mocked:
+- **Backend unit & API integration tests (`spotify-backend-java/`, 17 tests):** Uses JUnit 5, Spring Boot `MockMvc`, and an in-memory H2 database (`MODE=PostgreSQL` via `application-test.properties`) with `CloudinaryService` mocked to verify JWT tokens, search deduplication, Cloudinary cleanup, and RBAC/catalog/playlist flows:
   ```bash
   cd spotify-backend-java
   mvn -B test
   ```
-- **Frontend E2E tests (`spotify-clone/` & `spotify-admin/`):** Uses Playwright Chromium against production Next.js builds with stateful `page.route('**/api/**', ...)` fixtures:
+- **Frontend E2E tests (`spotify-clone/` 6 tests & `spotify-admin/` 2 tests):** Uses Playwright Chromium (`npm run dev` locally, `npm run start` in CI) with stateful `page.route('**/api/**', ...)` fixtures covering playback, auth, playlists, search, and admin RBAC/CRUD:
   ```bash
   cd spotify-clone
   npx playwright install chromium
@@ -792,8 +799,10 @@ The application is packaged as a single Helm chart at `helm/notspotify/`.
 | `admin-deployment.yaml`     | Admin frontend Deployment + ClusterIP Service                  |
 | `postgres-statefulset.yaml` | PostgreSQL StatefulSet + ClusterIP Service                     |
 | `postgres-pvc.yaml`         | PersistentVolumeClaim - 10 Gi, `gp2` StorageClass              |
-| `ingress.yaml`              | NGINX Ingress: `/api` → backend, `/admin` → admin, `/` → clone |
+| `ingress.yaml`              | NGINX Ingress: `/api` → backend, `/admin` → admin, `/` → clone (`notspotify.app`) |
 | `secrets.yaml`              | DB credentials + Cloudinary keys as Kubernetes Secrets         |
+
+ExternalDNS (`k8s/external-dns/external-dns.yaml`) syncs the `notspotify.app` ingress host to Cloudflare DNS with proxied edge TLS.
 
 **Manual deploy:**
 

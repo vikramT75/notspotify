@@ -8,18 +8,8 @@ import axios from 'axios'
 const Sidebar = () => {
   const router = useRouter()
   const pathname = usePathname() || '/'
-  const { user, token } = React.useContext(AuthContext)
+  const { user, token, playlists, setPlaylists } = React.useContext(AuthContext)
   const { url } = React.useContext(PlayerContext)
-  const [playlists, setPlaylists] = React.useState([])
-
-  React.useEffect(() => {
-    if (token) {
-      axios
-        .get(`${url}/api/playlist/user`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => setPlaylists(res.data.playlists || []))
-        .catch(() => {})
-    }
-  }, [token, url])
 
   const handleCreatePlaylist = async () => {
     if (!token) return alert('Please login first')

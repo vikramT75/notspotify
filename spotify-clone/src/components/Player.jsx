@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import { PlayerContext } from '../context/PlayerContext'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
@@ -33,18 +33,8 @@ const HeartIcon = ({ filled }) => (
 
 const Player = () => {
   const { track, seekBar, seekBg, playStatus, play, pause, time, previous, next, seekSong, audioRef, url } = useContext(PlayerContext)
-  const { user, likedSongs, toggleLike, token } = useContext(AuthContext)
-  const [playlists, setPlaylists] = useState([])
+  const { user, likedSongs, toggleLike, token, playlists } = useContext(AuthContext)
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false)
-
-  useEffect(() => {
-    if (token) {
-      axios
-        .get(`${url}/api/playlist/user`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => setPlaylists(res.data.playlists || []))
-        .catch(() => {})
-    }
-  }, [token, url])
 
   const addToPlaylist = async (playlistId) => {
     try {

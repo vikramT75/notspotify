@@ -20,10 +20,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build Backend (Maven)
+      - name: Build & Test Backend (Maven)
         run: |
           cd spotify-backend-java
-          mvn -B clean package -DskipTests
+          mvn -B clean package
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -42,8 +42,57 @@ jobs:
           npm ci
           npm run build
 
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Install & Build Clone Frontend
+        run: |
+          cd spotify-clone
+          npm ci
+          npm run build
+
+      - name: Install & Build Admin Frontend
+        run: |
+          cd spotify-admin
+          npm ci
+          npm run build
+
+      - name: Install Playwright Chromium
+        run: |
+          cd spotify-clone
+          npx playwright install --with-deps chromium
+
+      - name: Run Clone Playwright E2E Tests
+        run: |
+          cd spotify-clone
+          npx playwright test
+
+      - name: Run Admin Playwright E2E Tests
+        run: |
+          cd spotify-admin
+          npx playwright test
+
+      - name: Upload Playwright Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-reports
+          path: |
+            spotify-clone/playwright-report
+            spotify-admin/playwright-report
+          retention-days: 14
+
   docker-build:
-    needs: build-and-test
+    if: github.event_name == 'push'
+    needs: [build-and-test, e2e-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code

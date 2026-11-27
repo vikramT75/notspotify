@@ -10,11 +10,24 @@ const DisplayHome = () => {
   const [recentSongs, setRecentSongs] = React.useState([])
 
   React.useEffect(() => {
+    if (loading) return
     try {
-      const saved = localStorage.getItem('recentSongs')
-      if (saved) setRecentSongs(JSON.parse(saved))
-    } catch {}
-  }, [])
+      const saved = JSON.parse(localStorage.getItem('recentSongs') || '[]')
+      const liveById = new Map(
+        songsData.map(s => [String(s._id !== undefined ? s._id : s.id), s])
+      )
+      const validRecent = Array.isArray(saved)
+        ? saved
+            .map(item => liveById.get(String(item._id !== undefined ? item._id : item.id)))
+            .filter(Boolean)
+        : []
+      setRecentSongs(validRecent)
+      localStorage.setItem('recentSongs', JSON.stringify(validRecent))
+    } catch {
+      localStorage.removeItem('recentSongs')
+      setRecentSongs([])
+    }
+  }, [loading, songsData])
 
   return (
     <>

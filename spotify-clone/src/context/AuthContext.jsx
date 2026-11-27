@@ -25,11 +25,13 @@ export const AuthContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     const [likedSongs, setLikedSongs] = useState([]);
+    const [playlists, setPlaylists] = useState([]);
 
     const clearSession = () => {
         setToken(null);
         setUser(null);
         setLikedSongs([]);
+        setPlaylists([]);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
     };
@@ -51,6 +53,21 @@ export const AuthContextProvider = ({ children }) => {
         }
     };
 
+    const fetchPlaylists = async (currentToken) => {
+        try {
+            const response = await axios.get(`${url}/api/playlist/user`, {
+                headers: { Authorization: `Bearer ${currentToken}` }
+            });
+            if (response.data.success) {
+                setPlaylists(response.data.playlists || []);
+            }
+        } catch (error) {
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                clearSession();
+            }
+        }
+    };
+
     useEffect(() => {
         try {
             const storedToken = localStorage.getItem("token");
@@ -60,6 +77,7 @@ export const AuthContextProvider = ({ children }) => {
                 setToken(storedToken);
                 setUser(JSON.parse(storedUser));
                 fetchLikedSongs(storedToken);
+                fetchPlaylists(storedToken);
             } else if (storedToken || storedUser) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
@@ -129,7 +147,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, signup, logout, likedSongs, toggleLike }}>
+        <AuthContext.Provider value={{ user, token, loading, login, signup, logout, likedSongs, toggleLike, playlists, setPlaylists }}>
             {children}
         </AuthContext.Provider>
     );

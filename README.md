@@ -23,6 +23,7 @@ A full-stack music streaming web application built from scratch - covering a Jav
 - [DevOps & Infrastructure](#devops--infrastructure)
   - [Docker Compose](#docker-compose)
   - [CI/CD - GitHub Actions](#cicd--github-actions)
+  - [Testing](#testing)
   - [Terraform - AWS Infrastructure](#terraform--aws-infrastructure)
   - [Kubernetes & Helm Chart](#kubernetes--helm-chart)
   - [GitOps - ArgoCD](#gitops--argocd)
@@ -684,12 +685,21 @@ The pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) triggers 
 | -------------------- | ----------------------------------------------- |
 | Checkout             | `actions/checkout@v5`                           |
 | JDK 17 + Maven cache | `actions/setup-java@v5`                         |
-| Build backend        | `mvn -B clean package -DskipTests`              |
+| Build & test backend | `mvn -B clean package`                          |
 | Node 20              | `actions/setup-node@v5`                         |
 | Build user frontend  | `npm ci && npm run build` (in `spotify-clone/`) |
 | Build admin frontend | `npm ci && npm run build` (in `spotify-admin/`) |
 
-#### Stage 2 - `docker-build` _(runs only if Stage 1 passes)_
+#### Stage 2 - `e2e-tests`
+
+| Step                  | Action                                                           |
+| --------------------- | ---------------------------------------------------------------- |
+| Build frontends       | `npm ci && npm run build` in `spotify-clone/` and `spotify-admin/` |
+| Install Chromium      | `npx playwright install --with-deps chromium`                    |
+| Run Playwright E2E    | `npx playwright test` in both `spotify-clone/` and `spotify-admin/` |
+| Upload HTML reports   | `actions/upload-artifact@v4` (`playwright-reports`, `if: always()`) |
+
+#### Stage 3 - `docker-build` _(runs only on `push` after Stages 1 & 2 pass)_
 
 | Step                        | Action                              |
 | --------------------------- | ----------------------------------- |
@@ -704,6 +714,25 @@ The pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) triggers 
 | -------------------- | --------------------------------------------- |
 | `DOCKERHUB_USERNAME` | Your Docker Hub username                      |
 | `DOCKERHUB_TOKEN`    | A Docker Hub access token (not your password) |
+
+---
+
+### Testing
+
+- **Backend unit & API integration tests (`spotify-backend-java/`):** Uses JUnit 5, Spring Boot `MockMvc`, and an in-memory H2 database (`MODE=PostgreSQL` via `application-test.properties`) with `CloudinaryService` mocked:
+  ```bash
+  cd spotify-backend-java
+  mvn -B test
+  ```
+- **Frontend E2E tests (`spotify-clone/` & `spotify-admin/`):** Uses Playwright Chromium against production Next.js builds with stateful `page.route('**/api/**', ...)` fixtures:
+  ```bash
+  cd spotify-clone
+  npx playwright install chromium
+  npx playwright test
+
+  cd ../spotify-admin
+  npx playwright test
+  ```
 
 ---
 

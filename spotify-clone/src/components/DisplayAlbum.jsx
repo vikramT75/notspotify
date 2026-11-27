@@ -29,7 +29,10 @@ const DisplayAlbum = () => {
     )
   }
 
-  const albumTracks = songsData.filter(item => item.album === albumData.name || !item.album)
+  const albumId = albumData._id !== undefined ? albumData._id : albumData.id
+  const albumTracks = songsData.filter(
+    item => item.album === albumData.name || String(item.album) === String(albumId)
+  )
 
   return (
     <>

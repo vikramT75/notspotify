@@ -694,8 +694,8 @@ The pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) triggers 
 
 | Step                  | Action                                                           |
 | --------------------- | ---------------------------------------------------------------- |
+| Container             | `mcr.microsoft.com/playwright:v1.65.1-noble` (pre-installed Chromium) |
 | Build frontends       | `npm ci && npm run build` in `spotify-clone/` and `spotify-admin/` |
-| Install Chromium      | `npx playwright install --with-deps chromium`                    |
 | Run Playwright E2E    | `npx playwright test` in both `spotify-clone/` and `spotify-admin/` |
 | Upload HTML reports   | `actions/upload-artifact@v4` (`playwright-reports`, `if: always()`) |
 

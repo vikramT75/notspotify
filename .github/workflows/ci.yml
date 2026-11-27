@@ -44,14 +44,12 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
     steps:
       - name: Checkout Code
         uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
 
       - name: Install & Build Clone Frontend
         run: |
@@ -64,11 +62,6 @@ jobs:
           cd spotify-admin
           npm ci
           npm run build
-
-      - name: Install Playwright Chromium
-        run: |
-          cd spotify-clone
-          npx playwright install --with-deps chromium
 
       - name: Run Clone Playwright E2E Tests
         run: |

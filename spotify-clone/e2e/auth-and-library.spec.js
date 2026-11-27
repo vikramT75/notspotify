@@ -67,10 +67,13 @@ test.describe('Authentication, liked songs, and playlists', () => {
 
     // Add active track to the playlist from Player bar
     await page.getByRole('button', { name: 'Add to playlist' }).click();
-    await page.locator('div.absolute button', { hasText: 'Workout Mix' }).click();
+    await Promise.all([
+      page.waitForResponse((res) => res.url().includes('/api/playlist/add-song') && res.status() === 200),
+      page.locator('div.absolute button', { hasText: 'Workout Mix' }).click(),
+    ]);
 
     // Open playlist page and verify track is listed, then remove it
-    await page.getByRole('button', { name: /Workout Mix/i }).click();
+    await page.getByRole('button', { name: /Workout Mix/i }).first().click();
     await expect(page).toHaveURL(/\/playlist\/playlist-1$/);
     await expect(page.getByText('Midnight Signal').first()).toBeVisible();
 
